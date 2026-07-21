@@ -37,6 +37,7 @@ REFRESH_JWT_SECRET="your-refresh-token-secret"
 ```
 
 Note: the refresh-token secret is read from `REFRESH_JWT_SECRET` in the current code.
+
 Note: If you don't have a secret, you can generate one by running
 ```bash
 node create_secret.js
