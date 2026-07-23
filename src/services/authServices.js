@@ -54,17 +54,7 @@ export async function login(user) {
     }
 }
 
-export async function refreshToken(tokenPayload) {
-    try {
-        const token = createToken(tokenPayload, "15m", process.env.JWT_SECRET)
-        return success(stausCode.OK, "Token refreshed successfully", { token: token })
-    } catch (error) {
-        console.log(error)
-        return failure(stausCode.INTERNAL_SERVER_ERROR, "Something went wrong try again later")
-    }
-}
-
-export async function isEmailTaken(email) {
+async function isEmailTaken(email) {
     const user = await retrieveUser(email)
 
     return user != null;
@@ -82,4 +72,14 @@ async function retrieveUser(email) {
             role: true
         }
     })
+}
+
+export async function refreshToken(tokenPayload) {
+    try {
+        const token = createToken(tokenPayload, "15m", process.env.JWT_SECRET)
+        return success(stausCode.OK, "Token refreshed successfully", { token: token })
+    } catch (error) {
+        console.log(error)
+        return failure(stausCode.INTERNAL_SERVER_ERROR, "Something went wrong try again later")
+    }
 }
