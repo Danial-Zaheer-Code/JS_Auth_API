@@ -17,8 +17,9 @@ export async function register(user) {
         await prisma.user.create({
             data: user
         })
+        await sendOtp(user.email, user.otp)
 
-        return success(stausCode.OK, "User created successfully")
+        return success(stausCode.CREATED, "Registration Successfull. OTP sent to your email");
     } catch (error) {
         console.log(error)
         return failure(stausCode.INTERNAL_SERVER_ERROR, "Something went wrong. Try again later")
@@ -84,7 +85,7 @@ export async function refreshToken(tokenPayload) {
     }
 }
 
-export async function sendOtp(email, otp) {
+async function sendOtp(email, otp) {
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT,
