@@ -39,6 +39,10 @@ export async function login(user) {
             return failure(stausCode.UNAUTHORIZED, "Wrong Password")
         }
 
+        if(!existingUser.isVerified){
+            return failure(stausCode.UNAUTHORIZED, "User is not verified. Please verify your email")
+        }
+
         const tokenPayload = {
             userId: existingUser.id,
             isAdmin: existingUser.role == "ADMIN"
@@ -62,6 +66,10 @@ export async function verifyOTP(email, otp){
             return failure(stausCode.NOT_FOUND, "User does not exists")
         }
 
+        if(existingUser.isVerified){
+            return failure(stausCode.BAD_REQUEST, "User is already verified")
+        }
+
         const isMatch = await compare(otp, existingUser.otp);
 
         if(!isMatch){
@@ -71,6 +79,15 @@ export async function verifyOTP(email, otp){
         if(existingUser.otpExpiry < new Date()){
             return failure(stausCode.UNAUTHORIZED, "OTP Expired")
         }
+
+        await prisma.user.update({
+            where: {
+                email: email
+            },
+            data: {
+                isVerified: true
+            }
+        })
 
         const tokenPayload = {
             userId: existingUser.id,
@@ -104,7 +121,8 @@ async function retrieveUser(email) {
             password: true,
             role: true,
             otp: true,
-            otpExpiry: true
+            otpExpiry: true,
+            isVerified: true
         }
     })
 }
