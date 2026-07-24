@@ -25,7 +25,7 @@ model User {
   role Role @default(USER)
   createdAt DateTime @default(now()) @map("created_at")
   otp String
-  otpExpity DateTime @map("otp_expiry")
+  otpExpiry DateTime @map("otp_expiry")
 
   @@map("users")
 }

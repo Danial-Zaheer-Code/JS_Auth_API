@@ -6,6 +6,7 @@ import { prisma } from "../lib/prisma.js"
 import { hash, compare } from "../utils/hashing.js"
 import { success, failure } from "../utils/result.js"
 import { createToken } from "../utils/utils.js"
+import nodemailer from "nodemailer"
 
 export async function register(user) {
     try {
