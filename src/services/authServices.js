@@ -54,6 +54,36 @@ export async function login(user) {
     }
 }
 
+export async function verifyOTP(email, otp){
+    try{
+        const existingUser = await retrieveUser(email);
+        if (!existingUser) {
+            return failure(stausCode.NOT_FOUND, "User does not exists")
+        }
+
+        if(existingUser.otp != otp){
+            return failure(stausCode.UNAUTHORIZED, "Invalid OTP")
+        }
+
+        if(existingUser.otpExpiry < new Date()){
+            return failure(stausCode.UNAUTHORIZED, "OTP Expired")
+        }
+
+        const tokenPayload = {
+            userId: existingUser.id,
+            isAdmin: existingUser.role == "ADMIN"
+        }
+
+        const token = createToken(tokenPayload, "15m", process.env.JWT_SECRET)
+        const refreshToken = createToken(tokenPayload, "1h", process.env.REFRESH_JWT_SECRET)
+        return success(stausCode.OK, "OTP verified successfully", { token: token, refreshToken: refreshToken, userName: existingUser.name });   
+    }
+    catch(error){
+        console.log(error)
+        return failure(stausCode.INTERNAL_SERVER_ERROR, "Something went wrong try again later")
+    }
+}
+
 async function isEmailTaken(email) {
     const user = await retrieveUser(email)
 
@@ -69,7 +99,9 @@ async function retrieveUser(email) {
             id: true,
             name: true,
             password: true,
-            role: true
+            role: true,
+            otp: true,
+            otpExpiry: true
         }
     })
 }
@@ -83,4 +115,5 @@ export async function refreshToken(tokenPayload) {
         return failure(stausCode.INTERNAL_SERVER_ERROR, "Something went wrong try again later")
     }
 }
+
 

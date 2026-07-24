@@ -61,3 +61,19 @@ router.post("/refresh-token",
     validateRefreshToken,
     authController.refresh
 )
+
+router.post("/verify-otp",
+    body("email")
+        .exists()
+        .withMessage("Email is required")
+        .isEmail()
+        .withMessage("Invalid email")
+        .normalizeEmail(),
+    body("otp")
+        .exists()
+        .withMessage("OTP is required")
+        .isLength({ min: 6, max: 6 })
+        .withMessage("OTP must be 6 digits long"),
+    validateRequest,
+    authController.verifyOTP
+)

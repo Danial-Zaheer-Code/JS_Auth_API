@@ -36,3 +36,9 @@ export async function refresh(req, res) {
 
     return res.status(result.status).json(result.responseBody)
 }
+
+export async function verifyOTP(req, res) {
+    const { email, otp } = req.body
+    const result = await authServices.verifyOTP(email, otp)
+    return res.status(result.status).json(result.responseBody)
+}
