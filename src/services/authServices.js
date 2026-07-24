@@ -6,7 +6,6 @@ import { prisma } from "../lib/prisma.js"
 import { hash, compare } from "../utils/hashing.js"
 import { success, failure } from "../utils/result.js"
 import { createToken } from "../utils/utils.js"
-import nodemailer from "nodemailer"
 
 export async function register(user) {
     try {
@@ -18,7 +17,6 @@ export async function register(user) {
         await prisma.user.create({
             data: user
         })
-        await sendOtp(user.email, user.otp)
 
         return success(stausCode.CREATED, "Registration Successfull. OTP sent to your email");
     } catch (error) {
@@ -86,23 +84,3 @@ export async function refreshToken(tokenPayload) {
     }
 }
 
-async function sendOtp(email, otp) {
-  const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    secure: false,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    }
-  });
-
-  const mailOptions = {
-    from: 'Your App <noreply@yourapp.com>',
-    to: email,
-    subject: 'OTP Verification',
-    text: `Your OTP is ${otp}. It will expire in 10 minutes.`
-  };
-
-  await transporter.sendMail(mailOptions);
-};

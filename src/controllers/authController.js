@@ -1,11 +1,19 @@
 import * as authServices from "../services/authServices.js"
-import {generateOTP} from "../utils/utils.js"
+import * as emailServices from "../services/emailServices.js"
+import * as statusCodes from "../utils/statusCodes.js"
+import { generateOTP } from "../utils/utils.js"
 export async function register(req, res) {
     const user = req.body
     user.otp = generateOTP()
     user.otpExpiry = new Date(Date.now() + 1 * 60 * 1000)
 
     const result = await authServices.register(user);
+
+    if (result.status === 201) {
+        const emailResult = await emailServices.sendOtp(user.email, user.otp);
+
+        return res.status(emailResult.status).json(emailResult.responseBody);
+    }
 
     return res.status(result.status).json(result.responseBody)
 }
