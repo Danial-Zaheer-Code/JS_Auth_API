@@ -20,7 +20,15 @@ export async function sendOtp(email, otp) {
             text: `Your OTP is ${otp}. It will expire in 10 minutes.`
         };
 
-        await transporter.sendMail(mailOptions);
+        await transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error("Error sending email:", error);
+                return failure(statusCodes.INTERNAL_SERVER_ERROR, "Failed to send OTP");
+            }
+
+            //Display the preview URL for testing purposes
+            console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+        });
         return success(statusCodes.OK, "OTP sent successfully");
     } catch (error) {
         console.error("Error sending OTP:", error);

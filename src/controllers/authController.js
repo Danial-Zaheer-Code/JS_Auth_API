@@ -5,7 +5,7 @@ import { generateOTP } from "../utils/utils.js"
 export async function register(req, res) {
     const user = req.body
     user.otp = generateOTP()
-    user.otpExpiry = new Date(Date.now() + 1 * 60 * 1000)
+    user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000)
 
     const result = await authServices.register(user);
 
