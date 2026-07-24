@@ -14,6 +14,7 @@ export async function register(user) {
         }
 
         user.password = await hash(user.password);
+        user.otp = await hash(user.otp);
         await prisma.user.create({
             data: user
         })
@@ -61,7 +62,9 @@ export async function verifyOTP(email, otp){
             return failure(stausCode.NOT_FOUND, "User does not exists")
         }
 
-        if(existingUser.otp != otp){
+        const isMatch = await compare(otp, existingUser.otp);
+
+        if(!isMatch){
             return failure(stausCode.UNAUTHORIZED, "Invalid OTP")
         }
 
