@@ -19,7 +19,7 @@ export async function register(user) {
             data: user
         })
 
-        return success(stausCode.CREATED, "Registration Successfull. OTP sent to your email");
+        return success(stausCode.CREATED, "User created successfully");
     } catch (error) {
         console.log(error)
         return failure(stausCode.INTERNAL_SERVER_ERROR, "Something went wrong. Try again later")
@@ -104,6 +104,33 @@ export async function verifyOTP(email, otp){
     }
 }
 
+export async function storeOTP(email, otp) {
+    try {
+        if (!await isEmailTaken(email)) {
+            return failure(stausCode.NOT_FOUND, "User does not exists")
+        }
+
+        const hashedOtp = await hash(otp);
+        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+
+        await prisma.user.update({
+            where: {
+                email: email
+            },
+            data: {
+                otp: hashedOtp,
+                otpExpiry: otpExpiry
+            }
+        });
+
+        return success(stausCode.OK, "OTP stored successfully");
+    }
+    catch (error) {
+        console.log(error)
+        return failure(stausCode.INTERNAL_SERVER_ERROR, "Something went wrong try again later")
+    }
+}
+
 async function isEmailTaken(email) {
     const user = await retrieveUser(email)
 
@@ -136,5 +163,3 @@ export async function refreshToken(tokenPayload) {
         return failure(stausCode.INTERNAL_SERVER_ERROR, "Something went wrong try again later")
     }
 }
-
-

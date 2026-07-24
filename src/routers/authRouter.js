@@ -77,3 +77,14 @@ router.post("/verify-otp",
     validateRequest,
     authController.verifyOTP
 )
+
+router.post("/resend-otp",
+    body("email")
+        .exists()
+        .withMessage("Email is required")
+        .isEmail()
+        .withMessage("Invalid email")
+        .normalizeEmail(),
+    validateRequest,
+    authController.resendOTP
+)

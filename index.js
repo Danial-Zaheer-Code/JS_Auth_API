@@ -10,7 +10,7 @@ const upload = multer();
 
 app.disable('x-powered-by');
 app.use(upload.none());
-app.use("/api/users", authRouter)
+app.use("/api/auth", authRouter)
 app.listen(process.env.PORT, () => {
 	console.log(`Example app listening on port ${process.env.PORT}`)
 })
