@@ -198,6 +198,4 @@ router.get(
 
 ## Database Notes
 
-- The `User` model stores `password`, `otp`, `otpExpiry`, and `isVerified` fields.
-- `email` is unique and `role` defaults to `USER`.
-- `createdAt` is stored in the database with the `created_at` column name.
+- You can find the schema in `prisma/schema.prisma`.
